@@ -1,0 +1,40 @@
+Hi. I made a function that removes the HTML tags along with their contents:
+
+Function:
+<?php
+function strip_tags_content($text, $tags = '', $invert = FALSE) {
+
+  preg_match_all('/<(.+?)[\s]*\/?[\s]*>/si', trim($tags), $tags);
+  $tags = array_unique($tags[1]);
+   
+  if(is_array($tags) AND count($tags) > 0) {
+    if($invert == FALSE) {
+      return preg_replace('@<(?!(?:'. implode('|', $tags) .')\b)(\w+)\b.*?>.*?</\1>@si', '', $text);
+    }
+    else {
+      return preg_replace('@<('. implode('|', $tags) .')\b.*?>.*?</\1>@si', '', $text);
+    }
+  }
+  elseif($invert == FALSE) {
+    return preg_replace('@<(\w+)\b.*?>.*?</\1>@si', '', $text);
+  }
+  return $text;
+}
+?>
+
+Sample text:
+$text = '<b>sample</b> text with <div>tags</div>';
+
+Result for strip_tags($text):
+sample text with tags
+
+Result for strip_tags_content($text):
+text with
+
+Result for strip_tags_content($text, '<b>'):
+<b>sample</b> text with
+
+Result for strip_tags_content($text, '<b>', TRUE);
+text with <div>tags</div>
+
+I hope that someone is useful :)
